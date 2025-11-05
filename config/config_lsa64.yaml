@@ -1,0 +1,40 @@
+# ===============================================================
+# CONFIGURATION FOR LSA64 DATASET (SKELETON-ONLY TRAINING)
+# ===============================================================
+
+work_dir: ./work_dir/lsa64_stgat
+
+# ===============================================================
+# Feeder Configuration
+# ===============================================================
+feeder: feeder.feeder.Feeder
+
+train_feeder_args:
+  data_split: E:\Sign Language to Text\st-gcn-sl\data_splits\train_split.json
+  input_type: skeleton
+  debug: False
+
+test_feeder_args:
+  data_split: E:\Sign Language to Text\st-gcn-sl\data_splits\test_split.json
+  input_type: skeleton
+  debug: False
+
+# Model parameters
+model: net.st_gcn.Model
+
+model_args:
+  in_channels: 3
+  num_class: 64      # number of signs in LSA64
+  edge_importance_weighting: True
+  graph_args:
+    layout: 'mediapipe'
+    strategy: 'spatial'
+
+# Training parameters
+use_gpu: False
+device: [0]
+test_batch_size: 16
+num_epoch: 80
+base_lr: 0.05     # Lower learning rate improves early stability
+step: [40, 60]    # Slower LR decay
+batch_size: 32  
