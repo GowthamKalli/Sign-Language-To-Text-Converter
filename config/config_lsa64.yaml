@@ -2,7 +2,7 @@
 # CONFIGURATION FOR LSA64 DATASET (SKELETON-ONLY TRAINING)
 # ===============================================================
 
-work_dir: ./work_dir/lsa64_stgat
+work_dir: "C:\\Users\\jeffl\\OneDrive\\Desktop\\Sign Language to Text\\st-gcn-sl\\work_dir\\lsa64_stgat"
 
 # ===============================================================
 # Feeder Configuration
@@ -10,31 +10,50 @@ work_dir: ./work_dir/lsa64_stgat
 feeder: feeder.feeder.Feeder
 
 train_feeder_args:
-  data_split: E:\Sign Language to Text\st-gcn-sl\data_splits\train_split.json
+  data_split: "C:\\Users\\jeffl\\OneDrive\\Desktop\\Sign Language to Text\\st-gcn-sl\\data_splits\\train_split.json"
   input_type: skeleton
   debug: False
+  # explicitly point to the label map produced from the training split
+  label_map: "C:\\Users\\jeffl\\OneDrive\\Desktop\\Sign Language to Text\\st-gcn-sl\\data_splits\\label_map.json"
+  index_to_text: "C:\\Users\\jeffl\\OneDrive\\Desktop\\Sign Language to Text\\st-gcn-sl\\data_splits\\index_to_text.json"
 
 test_feeder_args:
-  data_split: E:\Sign Language to Text\st-gcn-sl\data_splits\test_split.json
+  data_split: "C:\\Users\\jeffl\\OneDrive\\Desktop\\Sign Language to Text\\st-gcn-sl\\data_splits\\test_split.json"
   input_type: skeleton
   debug: False
+  label_map: "C:\\Users\\jeffl\\OneDrive\\Desktop\\Sign Language to Text\\st-gcn-sl\\data_splits\\label_map.json"
+  index_to_text: "C:\\Users\\jeffl\\OneDrive\\Desktop\\Sign Language to Text\\st-gcn-sl\\data_splits\\index_to_text.json"
 
+# ===============================================================
 # Model parameters
+# ===============================================================
 model: net.st_gcn.Model
 
 model_args:
   in_channels: 3
-  num_class: 64      # number of signs in LSA64
+  num_class: 64      # MUST equal number of entries in label_map.json
   edge_importance_weighting: True
   graph_args:
     layout: 'mediapipe'
     strategy: 'spatial'
 
+# ===============================================================
 # Training parameters
-use_gpu: False
-device: [0]
+# ===============================================================
+use_gpu: True             # ✅ enable GPU
+device: [0]               # first GPU (RTX 3050) - change to 0 if your train script expects scalar
+
+
 test_batch_size: 16
-num_epoch: 80
-base_lr: 0.05     # Lower learning rate improves early stability
-step: [40, 60]    # Slower LR decay
-batch_size: 32  
+num_epoch: 100
+base_lr: 0.05             # learning rate
+step: [60, 85]           # learning rate decay schedule
+batch_size: 16            # ✅ lowered for 6GB GPU (adjust if needed)
+
+save_interval: 2
+eval_interval: 2
+
+# Logging
+log_interval: 100
+save_log: True
+print_log: True
